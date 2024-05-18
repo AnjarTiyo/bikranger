@@ -1,44 +1,99 @@
+import { prisma } from "@/utils/configs/db";
+import { branchSchema } from "@/utils/types/branch";
 import { NextRequest, NextResponse } from "next/server";
-import { motors } from "../motors/route";
 
-// dummy data for branchs
-const branchs = [
-    {
-        id: '1',
-        name: 'Branch 1',
-        address: 'Address 1',
-        motorsList: [
-            ...motors
-        ],
-        motorsCount: motors.length
-    },
-    {
-        id: '2',
-        name: 'Branch 2',
-        address: 'Address 2',
-        motorsList: [
-            ...motors
-        ],
-        motorsCount: motors.length
+export async function GET(request: NextRequest) {
+  try {
+    const data = await prisma.branch.findMany({
+      cacheStrategy: { ttl: 60 },
+    });
+
+    const totalCount = data.length;
+    const totalPages = Math.ceil(totalCount / 10);
+
+    if (data.length < 1) {
+      return NextResponse.json(
+        {
+          message: "List branches not found",
+          metadata: {
+            totalCount,
+            totalPages,
+          },
+          data: [],
+        },
+        { status: 404 }
+      );
     }
-]
 
-export async function GET(request: NextRequest){
-    try {
-        const data = branchs //TODO change to query db
+    return NextResponse.json({
+      message: "Get list branches success",
+      metadata: {
+        totalCount,
+        totalPages,
+      },
+      data,
+    });
+  } catch (error) {
+    console.log(error);
 
-        const totalCount = data.length
-        const totalPages = Math.ceil(totalCount / 10)
+    return NextResponse.json(
+      {
+        message: "Get list branches error",
+        reason: (error as Error).message,
+      },
+      { status: 500 }
+    );
+  }
+}
 
-        return NextResponse.json({
-            message: 'Get list branchs success',
-            metadata: {
-                totalCount,
-                totalPages
-            },
-            data
-        })
-    } catch (error) {
-        
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+
+    const name = formData.get("name") as string;
+    const loc_map = formData.get("loc_map") as string;
+    const abbreviation = formData.get("abbreviation") as string;
+
+    const validatedField = branchSchema.safeParse({
+      name,
+      loc_map,
+      abbreviation,
+    });
+
+    if (!validatedField.success) {
+      return NextResponse.json(
+        {
+          message: "Create a branch error",
+          data: [],
+          reason: validatedField.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
     }
+
+    const data = await prisma.branch.create({
+      data: {
+        name,
+        loc_map,
+        abbreviation,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: "Create a branch success",
+        data,
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json(
+      {
+        message: "Create a branch error",
+        reason: (error as Error).message,
+      },
+      { status: 500 }
+    );
+  }
 }

@@ -1,49 +1,15 @@
+import { prisma } from "@/utils/configs/db"
 import { NextRequest, NextResponse } from "next/server"
-
-// dummy data for motors
-type Motor = {
-    id: number
-    name: string    
-    manufacturer: string
-    cc: number
-    price: number
-    image: string
-    description: string
-    isAvailable: boolean
-}
-
-export const motors: Motor[] = [
-    {
-        id: 1,
-        name: 'Motor 1',
-        manufacturer: 'Honda',
-        cc: 150,
-        price: 1000,
-        image: 'https://via.placeholder.com/150',
-        description: 'Description 1',
-        isAvailable: true
-    },
-    {
-        id: 2,
-        name: 'Motor 2',
-        manufacturer: 'Yamaha',
-        cc: 150,
-        price: 2000,
-        image: 'https://via.placeholder.com/150',
-        description: 'Description 2',
-        isAvailable: false
-    }
-]
 
 export async function GET(request: NextRequest) {
     try {
-        // 1. Prisma Query findMany, replace current mock
-        const data = motors //TODO change to query db
+        const data = await prisma.motor.findMany({
+            cacheStrategy: { ttl: 60 },
+        })
 
         const totalCount = await data.length
         const totalPages = Math.ceil(totalCount / 10)
 
-        // return not found if motor list is empty
         if(data.length < 1){
             return NextResponse.json({
                 message: 'List motor not found',
@@ -70,6 +36,33 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             { 
                 message: 'Get list motors error',
+                reason: (error as Error).message
+            }, 
+            { status: 500 }
+        )
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const formData = await request.formData();
+
+        const name = formData.get("name") as string;
+        const description = formData.get("description") as string;
+        const price = formData.get("price") as string;
+        const status = formData.get("status") as string;
+        const transmission = formData.get("transmission") as string;
+        const category = formData.get("category") as string;
+        const branch_id = formData.get("branch_id") as string;
+        const owner_id = formData.get("owner_id") as string;
+        const image = formData.get("image") as File;
+
+    } catch (error) {
+        console.log(error);
+        
+        return NextResponse.json(
+            { 
+                message: 'Create a motor error',
                 reason: (error as Error).message
             }, 
             { status: 500 }
