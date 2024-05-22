@@ -2,12 +2,6 @@ import { prisma } from "@/utils/configs/db";
 import { motorSchema } from "@/utils/types/motor";
 import { NextRequest, NextResponse } from "next/server";
 
-enum RentStatus {
-    AVAILABLE,
-    RENTED,
-    EXPIRING,
-  }
-
 export async function GET(request: NextRequest) {
   try {
     const data = await prisma.motor.findMany({
@@ -63,7 +57,7 @@ export async function POST(request: NextRequest) {
     const status = formData.get("status") as string;
     const transmission = formData.get("transmission") as string;
     const category = formData.get("category") as string;
-    const branch_id = formData.get("branch_id") as unknown as number;
+    const branch_id = formData.get("branch_id") as number;
     const owner_id = formData.get("owner_id") as string;
     const image = formData.get("image") as File;
 

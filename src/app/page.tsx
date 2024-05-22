@@ -1,8 +1,5 @@
-import SearchMotor from "@/components/custom/searchMotor";
-import { Button } from "@/components/ui/button";
+import SearchMotor from "@/components/custom/search_motor";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronRightIcon, MountainIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,7 +27,7 @@ export default function Home() {
               alt="Motorbikes"
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
               height="550"
-              src="/varian-warna-pcx160-matte-brown-700x700-tr-21112023-055335.png"
+              src="/pcx.png"
               width="550"
             />
           </div>

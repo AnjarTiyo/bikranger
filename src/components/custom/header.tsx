@@ -15,6 +15,9 @@ export default function Header({ }: Props) {
                     <span className="sr-only">Acme Inc</span>
                 </Link>
                 <nav className="hidden lg:flex gap-4 sm:gap-6">
+                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="/motors">
+                        Motors
+                    </Link>
                     <Link className="text-sm font-medium hover:underline underline-offset-4" href="/orders">
                         Orders
                     </Link>

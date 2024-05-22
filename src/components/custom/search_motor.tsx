@@ -6,8 +6,18 @@ import { Button } from '../ui/button'
 const SearchMotor = () => {
   return (
     <>
-      <form className="flex space-x-2">
-        <Input className="max-w-lg flex-1 w-[30%]" placeholder="Search by location" type="text" id="input-location" />
+      <div className="flex space-x-2">
+        <Select>
+          <SelectTrigger className="h-auto max-w-lg" id="select-branch">
+            <SelectValue placeholder="Select Branch" />
+          </SelectTrigger>
+          {/* TODO Get List Branch */}
+          <SelectContent>
+            <SelectItem value="scooter">Kalasan</SelectItem>
+            <SelectItem value="motorcycle">Berbah</SelectItem>
+            <SelectItem value="moped">Kotagede</SelectItem>
+          </SelectContent>
+        </Select>
         <Input className="max-w-lg" placeholder="Pick a date" type="date" id="input-date" />
         <Select>
           <SelectTrigger className="h-auto" id="input-type">
@@ -20,7 +30,7 @@ const SearchMotor = () => {
           </SelectContent>
         </Select>
         <Button type="submit">Search</Button>
-      </form>
+      </div>
     </>
   )
 }
