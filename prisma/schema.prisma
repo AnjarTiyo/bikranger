@@ -85,7 +85,6 @@ model Authenticator {
 
 model Motor {
   id           String       @id @default(cuid())
-  category_id  Int
   name         String
   description  String?
   price        Int
