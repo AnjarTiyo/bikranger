@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-  const imageUrl = "/varian-warna-pcx160-matte-brown-700x700-tr-21112023-055335.png";
 
   return (
     <>
@@ -25,7 +24,7 @@ export default function Home() {
             </div>
             <Image
               alt="Motorbikes"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
+              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square hover:scale-105"
               height="550"
               src="/pcx.png"
               width="550"
