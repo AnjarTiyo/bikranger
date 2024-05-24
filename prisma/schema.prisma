@@ -1,11 +1,179 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?       @map("email_verified")
+  image         String?
+  role          Roles           @default(rentee)
+  address       String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  Authenticator Authenticator[]
+  accounts      Account[]
+  Cart          Cart?
+  Motor         Motor[]
+  sessions      Session[]
+  Transaction   Transaction[]
+
+  @@map("users")
+}
+
+model Account {
+  userId            String   @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String   @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Motor {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+  price        Int
+  image        String?
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+  status       RentStatus
+  rent_expiry  DateTime?
+  transmission Transmission
+  category     Category
+  branch_id    Int
+  owner_id     String
+  cart_item    CartItem[]
+  branch       Branch       @relation(fields: [branch_id], references: [id])
+  owner        User         @relation(fields: [owner_id], references: [id])
+  order_item   OrderItem[]
+
+  @@map("motors")
+}
+
+model Branch {
+  id           Int     @id @default(autoincrement())
+  name         String
+  loc_map      String
+  abbreviation String
+  motor_lists  Motor[]
+}
+
+model Cart {
+  id          Int           @id @default(autoincrement())
+  user_id     String        @unique
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  cart_items  CartItem[]
+  user        User          @relation(fields: [user_id], references: [id])
+  transaction Transaction[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id       Int    @id @default(autoincrement())
+  cart_id  Int
+  motor_id String
+  quantity Int
+  cart     Cart   @relation(fields: [cart_id], references: [id])
+  motor    Motor  @relation(fields: [motor_id], references: [id])
+
+  @@map("cart_items")
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  user_id     String
+  cart_id     Int
+  ammount     Int
+  status      TransactionStatus
+  payment_url String?
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+  cart        Cart              @relation(fields: [cart_id], references: [id])
+  user        User              @relation(fields: [user_id], references: [id])
+
+  @@map("transactions")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  user_id        String
+  transaction_id String
+  total          Int
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt
+  status         OrderStatus
+  items          OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id       Int    @id @default(autoincrement())
+  order_id String
+  motor_id String
+  quantity Int
+  price    Int
+  motor    Motor  @relation(fields: [motor_id], references: [id])
+  order    Order  @relation(fields: [order_id], references: [id])
+
+  @@map("order_items")
 }
 
 enum Roles {
@@ -43,178 +211,4 @@ enum OrderStatus {
   PROCESSING
   DELIVERING
   COMPLETED
-}
-
-model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  emailVerified DateTime?       @map("email_verified")
-  image         String?
-  role          Roles           @default(rentee)
-  address       String?
-  accounts      Account[]
-  sessions      Session[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
-
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  Motor       Motor[]
-  Cart        Cart?
-  Transaction Transaction[]
-
-  @@map("users")
-}
-
-model Account {
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-  @@map("verification_tokens")
-}
-
-// Optional for WebAuthn support
-model Authenticator {
-  credentialID         String  @unique
-  userId               String
-  providerAccountId    String
-  credentialPublicKey  String
-  counter              Int
-  credentialDeviceType String
-  credentialBackedUp   Boolean
-  transports           String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, credentialID])
-}
-
-model Motor {
-  id           String       @id @default(cuid())
-  category_id  Int
-  name         String
-  description  String?
-  price        Int
-  image        String?
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
-  status       Boolean
-  rent_expiry  DateTime
-  transmission Transmission
-  category     Category
-  branch_id    Int
-  branch       Branch       @relation(fields: [branch_id], references: [id])
-  owner_id     String
-  owner        User         @relation(fields: [owner_id], references: [id])
-  cart_item    CartItem[]
-  order_item   OrderItem[]
-
-  @@map("motors")
-}
-
-model Branch {
-  id          Int     @id @default(autoincrement())
-  name        String
-  loc_map     String
-  motor_lists Motor[]
-}
-
-model Cart {
-  id          Int           @id @default(autoincrement())
-  user_id     String        @unique
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  user        User          @relation(fields: [user_id], references: [id])
-  cart_items  CartItem[]
-  transaction Transaction[]
-
-  @@map("carts")
-}
-
-model CartItem {
-  id       Int    @id @default(autoincrement())
-  cart_id  Int
-  motor_id String
-  quantity Int
-  cart     Cart   @relation(fields: [cart_id], references: [id])
-  motor    Motor  @relation(fields: [motor_id], references: [id])
-
-  @@map("cart_items")
-}
-
-model Transaction {
-  id          String            @id @default(cuid())
-  user_id     String
-  cart_id     Int
-  ammount     Int
-  status      TransactionStatus
-  payment_url String?
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
-  cart        Cart?             @relation(fields: [cart_id], references: [id])
-  user        User              @relation(fields: [user_id], references: [id])
-
-  @@map("transactions")
-}
-
-model Order {
-  id             String      @id @default(cuid())
-  user_id        String
-  transaction_id String
-  total          Int
-  created_at     DateTime    @default(now())
-  updated_at     DateTime    @updatedAt
-  items          OrderItem[]
-  status         OrderStatus
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id       Int    @id @default(autoincrement())
-  order_id String
-  motor_id String
-  quantity Int
-  price    Int
-  order    Order  @relation(fields: [order_id], references: [id])
-  motor    Motor  @relation(fields: [motor_id], references: [id])
-
-  @@map("order_items")
 }
