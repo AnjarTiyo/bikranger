@@ -5,11 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-type Props = {
-    motorId: string
-}
-
-export default function MotorDetailPage({ motorId }: Props) {
+export default function MotorDetailPage() {
     const router = useRouter();
 
     return (
