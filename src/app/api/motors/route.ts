@@ -54,10 +54,10 @@ export async function POST(request: NextRequest) {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const price = formData.get("price") as string;
-    const status = formData.get("status") as string;
-    const transmission = formData.get("transmission") as string;
-    const category = formData.get("category") as string;
-    const branch_id = formData.get("branch_id") as number;
+    const status = formData.get("status") as "AVAILABLE" | "RENTED" | "EXPIRING";
+    const transmission = formData.get("transmission") as "automatic" | "manual" | "semi_automatic";
+    const category = formData.get("category") as "scooter" | "sports" | "electric";
+    const branch_id = formData.get("branch_id") as string;
     const owner_id = formData.get("owner_id") as string;
     const image = formData.get("image") as File;
 

@@ -13,11 +13,12 @@ export default function DashboardPage({ }: Props) {
 
   // If the user does not have the admin role, redirect them to the home page
   if (sessionClaims?.metadata.role !== "admin") {
+    console.log("role", sessionClaims)
     redirect("/");
   }
 
   return (
-    <main className="flex-1 bg-gray-100/40 p-4 md:p-10 dark:bg-gray-800/40">
+    <div className="flex-1 bg-gray-100/40 p-4 md:p-10 dark:bg-gray-800/40">
       <div className="mx-auto grid max-w-6xl gap-8">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -312,6 +313,6 @@ export default function DashboardPage({ }: Props) {
           </Card>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
