@@ -2,14 +2,9 @@ import React from 'react'
 import Link from 'next/link'
 import { MountainIcon, ShoppingCartIcon } from 'lucide-react'
 import { Button } from '../ui/button'
-import Image from 'next/image'
-import { auth } from '@clerk/nextjs/server'
-import { UserButton } from '@clerk/nextjs'
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 export default function Header() {
-    const { userId } = auth()
-    let isAuth = !!userId
-
     return (
         <>
             <header className="flex justify-between h-20 w-full shrink-0 items-center px-4 md:px-6">
@@ -35,23 +30,19 @@ export default function Header() {
                     </Link>
                 </nav>
                 <div className="ml-auto flex items-center gap-4">
-                    {!isAuth ?
-                        <>
-                            <Link href="/sign-up">
-                                <Button variant="outline" className='hover:bg-black hover:text-white'>Sign Up</Button>
+                    <SignedOut>
+                        <SignInButton>
+                            <Button variant="default" className='hover:bg-white hover:text-black hover:shadow-md'>Sign in</Button>
+                        </SignInButton>
+                    </SignedOut>
+                    <SignedIn>
+                        <div className='flex gap-4'>
+                            <Link href={'/admin/dashboard'}>
+                                <Button className='hover:bg-white hover:text-black hover:shadow-md'>Go to Admin Dashboard</Button>
                             </Link>
-                            <Link href="/sign-in">
-                                <Button variant="default" className='hover:bg-white hover:text-black'>Sign In</Button>
-                            </Link>
-                        </>
-                        :
-                        <>
-                            <Link href="/admin">
-                                <Button variant="outline" className='hover:bg-black hover:text-white'>Go to Admin Dashboard</Button>
-                            </Link>
-                            <UserButton afterSignOutUrl='/' />
-                        </>
-                    }
+                            <UserButton />
+                        </div>
+                    </SignedIn>
                 </div>
             </header>
         </>
