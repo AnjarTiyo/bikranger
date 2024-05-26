@@ -1,8 +1,9 @@
 import { prisma } from "@/utils/configs/db";
 import { roleIs } from "@/utils/helpers/roles";
-import { motorSchema } from "@/utils/types/motor";
+import { motorSchema } from "../../../../types/motor";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { badRequest, unauthorized } from "@/lib/api-response";
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,13 +52,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   if (!roleIs("admin")) {
-    return NextResponse.json(
-      {
-        message: "Unauthorized",
-        data: [],
-      },
-      { status: 401 }
-    );
+    return unauthorized();
   }
 
   try {
@@ -85,24 +80,17 @@ export async function POST(request: NextRequest) {
     const validatedFields = motorSchema.safeParse({
       name,
       description,
-      price,
+      price: parseInt(price),
       status,
       transmission,
       category,
-      branch_id,
+      branch_id: parseInt(branch_id),
       owner_id,
       image: image ?? undefined,
     });
 
     if (!validatedFields.success) {
-      return NextResponse.json(
-        {
-          message: "Add motor failed, please check your input again",
-          data: null,
-          reason: validatedFields.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
+      return badRequest('createMotor', validatedFields.error.flatten().fieldErrors);
     }
 
     // TODO handle image upload

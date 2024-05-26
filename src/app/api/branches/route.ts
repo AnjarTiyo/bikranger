@@ -1,5 +1,5 @@
 import { prisma } from "@/utils/configs/db";
-import { branchSchema } from "@/utils/types/branch";
+import { branchSchema } from "../../../../types/branch";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

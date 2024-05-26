@@ -1,10 +1,10 @@
-import { Roles } from "@/utils/types/globals";
+import { Roles } from "../../../types/globals";
 import { auth } from "@clerk/nextjs/server";
 
 export function roleIs(role: Roles) {
   const { sessionClaims } = auth();
 
-//   console.log("sessionClaims", sessionClaims.metadata)
+  console.log("sessionClaims", sessionClaims?.metadata.role)
 
-  return sessionClaims?.role === role;
+  return sessionClaims?.metadata.role === role;
 }

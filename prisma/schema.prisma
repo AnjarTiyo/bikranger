@@ -15,7 +15,7 @@ model User {
   email         String          @unique
   emailVerified DateTime?       @map("email_verified")
   image         String?
-  role          Roles           @default(rentee)
+  role          Roles           @default(user)
   address       String?
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
@@ -178,8 +178,8 @@ model OrderItem {
 
 enum Roles {
   admin
-  rentee
-  rentor
+  branch
+  user
 }
 
 enum Category {
