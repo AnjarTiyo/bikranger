@@ -38,9 +38,6 @@ export const motorSchema = z.object({
   branch_id: z.number({
     invalid_type_error: "'branch_id' must be a number",
   }),
-  owner_id: z.string().cuid({
-    message: "Owner id must be a valid cuid",
-  }),
   status: z.enum(["AVAILABLE", "RENTED", "EXPIRING"]),
   transmission: z.enum(["automatic", "manual", "semi_automatic"]),
   category: z.enum(["scooter", "sports", "electric"]),

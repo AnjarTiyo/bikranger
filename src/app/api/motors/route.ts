@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
       | "sports"
       | "electric";
     const branch_id = formData.get("branch_id") as string;
-    const owner_id = formData.get("owner_id") as string;
     const image = formData.get("image") as File;
 
     const validatedFields = motorSchema.safeParse({
@@ -85,7 +84,6 @@ export async function POST(request: NextRequest) {
       transmission,
       category,
       branch_id: parseInt(branch_id),
-      owner_id,
       image: image ?? undefined,
     });
 
@@ -104,12 +102,12 @@ export async function POST(request: NextRequest) {
         transmission,
         category,
         branch_id: parseInt(branch_id),
-        owner_id,
       },
     });
 
     return NextResponse.json({
       message: "Create a motor success",
+      data
     });
   } catch (error) {
     console.log(error);
