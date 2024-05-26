@@ -90,6 +90,8 @@ export async function POST(request: NextRequest) {
     if (!validatedFields.success) {
       return badRequest('createMotor', validatedFields.error.flatten().fieldErrors);
     }
+    
+    // TODO handle invalid branch
 
     // TODO handle image upload
 
