@@ -1,6 +1,10 @@
 import { prisma } from "@/utils/configs/db";
-import { branchSchema } from "@/utils/types/branch";
+import { branchSchema } from "../../../../types/branch";
 import { NextRequest, NextResponse } from "next/server";
+import { roleIs } from "@/utils/helpers/roles";
+import { unauthorized } from "@/lib/api-response";
+
+export const runtime = "edge"
 
 export async function GET(request: NextRequest) {
   try {
@@ -47,6 +51,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if(!roleIs("admin")){
+    return unauthorized();
+  }
+
   try {
     const formData = await request.formData();
 
@@ -77,7 +85,7 @@ export async function POST(request: NextRequest) {
         loc_map,
         abbreviation,
       },
-    });
+    })
 
     return NextResponse.json(
       {

@@ -1,6 +1,9 @@
 import { prisma } from "@/utils/configs/db";
-import { motorSchema } from "@/utils/types/motor";
+import { roleIs } from "@/utils/helpers/roles";
+import { motorSchema } from "../../../../types/motor";
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { badRequest, unauthorized } from "@/lib/api-response";
 
 export async function GET(request: NextRequest) {
   try {
@@ -48,60 +51,66 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!roleIs("admin")) {
+    return unauthorized();
+  }
+
   try {
     const formData = await request.formData();
 
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const price = formData.get("price") as string;
-    const status = formData.get("status") as "AVAILABLE" | "RENTED" | "EXPIRING";
-    const transmission = formData.get("transmission") as "automatic" | "manual" | "semi_automatic";
-    const category = formData.get("category") as "scooter" | "sports" | "electric";
+    const status = formData.get("status") as
+      | "AVAILABLE"
+      | "RENTED"
+      | "EXPIRING";
+    const transmission = formData.get("transmission") as
+      | "automatic"
+      | "manual"
+      | "semi_automatic";
+    const category = formData.get("category") as
+      | "scooter"
+      | "sports"
+      | "electric";
     const branch_id = formData.get("branch_id") as string;
-    const owner_id = formData.get("owner_id") as string;
     const image = formData.get("image") as File;
 
     const validatedFields = motorSchema.safeParse({
       name,
       description,
-      price,
+      price: parseInt(price),
       status,
       transmission,
       category,
-      branch_id,
-      owner_id,
+      branch_id: parseInt(branch_id),
       image: image ?? undefined,
     });
 
     if (!validatedFields.success) {
-      return NextResponse.json(
-        {
-          message: "Add motor failed, please check your input again",
-          data: null,
-          reason: validatedFields.error.flatten().fieldErrors,
-        },
-        { status: 400 }
-      );
+      return badRequest('createMotor', validatedFields.error.flatten().fieldErrors);
     }
+    
+    // TODO handle invalid branch
 
     // TODO handle image upload
 
     const data = await prisma.motor.create({
-        data:{
-            name,
-            description,
-            price: parseInt(price),
-            status,
-            transmission,
-            category,
-            branch_id: parseInt(branch_id),
-            owner_id,
-        }
-    })
+      data: {
+        name,
+        description,
+        price: parseInt(price),
+        status,
+        transmission,
+        category,
+        branch_id: parseInt(branch_id),
+      },
+    });
 
     return NextResponse.json({
       message: "Create a motor success",
-    })
+      data
+    });
   } catch (error) {
     console.log(error);
 
