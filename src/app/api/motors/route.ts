@@ -1,5 +1,7 @@
 import { prisma } from "@/utils/configs/db";
+import { roleIs } from "@/utils/helpers/roles";
 import { motorSchema } from "@/utils/types/motor";
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -48,15 +50,34 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!roleIs("admin")) {
+    return NextResponse.json(
+      {
+        message: "Unauthorized",
+        data: [],
+      },
+      { status: 401 }
+    );
+  }
+
   try {
     const formData = await request.formData();
 
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const price = formData.get("price") as string;
-    const status = formData.get("status") as "AVAILABLE" | "RENTED" | "EXPIRING";
-    const transmission = formData.get("transmission") as "automatic" | "manual" | "semi_automatic";
-    const category = formData.get("category") as "scooter" | "sports" | "electric";
+    const status = formData.get("status") as
+      | "AVAILABLE"
+      | "RENTED"
+      | "EXPIRING";
+    const transmission = formData.get("transmission") as
+      | "automatic"
+      | "manual"
+      | "semi_automatic";
+    const category = formData.get("category") as
+      | "scooter"
+      | "sports"
+      | "electric";
     const branch_id = formData.get("branch_id") as string;
     const owner_id = formData.get("owner_id") as string;
     const image = formData.get("image") as File;
@@ -87,21 +108,21 @@ export async function POST(request: NextRequest) {
     // TODO handle image upload
 
     const data = await prisma.motor.create({
-        data:{
-            name,
-            description,
-            price: parseInt(price),
-            status,
-            transmission,
-            category,
-            branch_id: parseInt(branch_id),
-            owner_id,
-        }
-    })
+      data: {
+        name,
+        description,
+        price: parseInt(price),
+        status,
+        transmission,
+        category,
+        branch_id: parseInt(branch_id),
+        owner_id,
+      },
+    });
 
     return NextResponse.json({
       message: "Create a motor success",
-    })
+    });
   } catch (error) {
     console.log(error);
 
