@@ -9,22 +9,6 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String        @unique
-  emailVerified DateTime?     @map("email_verified")
-  image         String?
-  role          Roles         @default(user)
-  address       String?
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  Cart          Cart?
-  Transaction   Transaction[]
-
-  @@map("users")
-}
-
 model Motor {
   id           String       @id @default(cuid())
   name         String
@@ -39,9 +23,8 @@ model Motor {
   category     Category
   branch_id    Int
   owner_id     String
-  cart_item    CartItem[]
   branch       Branch       @relation(fields: [branch_id], references: [id])
-  order_item   OrderItem[]
+  order        Order[]
 
   @@map("motors")
 }
@@ -57,65 +40,36 @@ model Branch {
   @@map("branches")
 }
 
-model Cart {
-  id          Int           @id @default(autoincrement())
-  user_id     String        @unique
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  cart_items  CartItem[]
-  user        User          @relation(fields: [user_id], references: [id])
-  transaction Transaction[]
+model Order {
+  id             String        @id @default(cuid())
+  user_id        String
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  motor_id       String
+  duration       Int
+  transaction_id String?
+  start_date     DateTime      @db.Timestamp()
+  end_date       DateTime      @db.Timestamp()
+  email          String
+  phone_number   String
+  transaction    Transaction[]
+  motor          Motor         @relation(fields: [motor_id], references: [id])
 
-  @@map("carts")
-}
-
-model CartItem {
-  id       Int    @id @default(autoincrement())
-  cart_id  Int
-  motor_id String
-  cart     Cart   @relation(fields: [cart_id], references: [id])
-  motor    Motor  @relation(fields: [motor_id], references: [id])
-
-  @@map("cart_items")
+  @@map("orders")
 }
 
 model Transaction {
   id          String            @id @default(cuid())
   user_id     String
-  cart_id     Int
   ammount     Int
   status      TransactionStatus
   payment_url String?
   created_at  DateTime          @default(now())
   updated_at  DateTime          @updatedAt
-  cart        Cart              @relation(fields: [cart_id], references: [id])
-  user        User              @relation(fields: [user_id], references: [id])
+  order_id    String
+  order       Order             @relation(fields: [order_id], references: [id])
 
   @@map("transactions")
-}
-
-model Order {
-  id             String      @id @default(cuid())
-  user_id        String
-  transaction_id String
-  total          Int
-  created_at     DateTime    @default(now())
-  updated_at     DateTime    @updatedAt
-  status         OrderStatus
-  items          OrderItem[]
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id       Int    @id @default(autoincrement())
-  order_id String
-  motor_id String
-  price    Int
-  motor    Motor  @relation(fields: [motor_id], references: [id])
-  order    Order  @relation(fields: [order_id], references: [id])
-
-  @@map("order_items")
 }
 
 enum Roles {
