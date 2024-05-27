@@ -11,9 +11,10 @@ type Props = {
     motorType: string
     transmission: string
     price: number
+    isInOrder: boolean
 }
 
-export default async function MotorCard({ motorId, imageUrl, motorName, motorType, transmission, price }: Props) {
+export default async function MotorCard({ motorId, imageUrl, motorName, motorType, transmission, price, isInOrder = false }: Props) {
     return (
         <Card className="border rounded-lg overflow-hidden">
             <div className="p-1/2">
@@ -43,7 +44,10 @@ export default async function MotorCard({ motorId, imageUrl, motorName, motorTyp
                     <Link href={`/motors/${motorId}`}>
                         <Button>View Details</Button>
                     </Link>
-                    <Button variant="outline">Order Now</Button>
+                    {
+                        !isInOrder &&
+                        <Button variant="outline">Order Now</Button>
+                    }
                 </CardFooter>
             </div>
         </Card>

@@ -1,12 +1,18 @@
+import MotorCard from '@/components/custom/motor-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getDetailMotor } from '@/utils/api/motor'
 import React from 'react'
 
-type Props = {}
+type Props = {
+  motor_id: string
+}
 
-export default function OrderPage({ }: Props) {
+export default async function OrderPage({ motor_id }: Props) {
+  const motor = await getDetailMotor(motor_id);
+  
   return (
     <>
       <main className="flex-1 overflow-auto">
@@ -17,9 +23,18 @@ export default function OrderPage({ }: Props) {
               <p className="text-gray-500 dark:text-gray-400">Fill out the form to place your order.</p>
             </div>
           </div>
-          <div className="border rounded-lg overflow-hidden p-6 md:p-8">
+          <div className="flex flex-row gap-8 border rounded-lg overflow-hidden p-6 md:p-8">
+            <MotorCard 
+              motorId={motor.data.id}
+              imageUrl="/placeholder-motor.jpeg"
+              motorName={motor.data.motor_name}
+              motorType="Scooter"
+              transmission="Automatic"
+              price={200000}
+              isInOrder={true}
+            />
             <form className="grid gap-6">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" placeholder="Enter your name" />

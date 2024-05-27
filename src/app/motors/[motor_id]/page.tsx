@@ -82,7 +82,7 @@ export default function MotorDetailPage() {
                     <ArrowLeftIcon className="w-4 h-4 mr-2" />
                     Back
                   </Button>
-                  <Button>Order Now</Button>
+                  <Button onClick={() => router.push(`/motors/${motor_id}/orders`)}>Order Now</Button>
                 </div>
               </div>
             </div>
