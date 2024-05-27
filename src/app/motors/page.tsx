@@ -37,19 +37,11 @@ export default function MotorPage({ }: Props) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         <MotorCard 
                             motorId="PCX160"
-                            imageUrl="/pcx.png"
-                            motorName="PCX160 2019"
-                            motorType="Scooter"
-                            transmission="AT"
-                            price={200000}
+                            isInOrder={false}
                         />
                         <MotorCard
-                            motorId="ADV160" 
-                            imageUrl="/adv.png"
-                            motorName="ADV160 2024"
-                            motorType="Scooter"
-                            transmission="AT"
-                            price={225000}
+                            motorId="PCX160"
+                            isInOrder={false}
                         />
                     </div>
                 </div>
