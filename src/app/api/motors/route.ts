@@ -3,7 +3,7 @@ import { roleIs } from "@/utils/helpers/roles";
 import { motorSchema } from "../../../../types/motor";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { badRequest, unauthorized } from "@/lib/api-response";
+import { badRequest, errRequest, unauthorized } from "@/lib/api-response";
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,10 +51,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const {sessionClaims} = await auth();
+  const { sessionClaims } = await auth();
+
+  if (!sessionClaims) {
+    return unauthorized("You need to sign in to access this endpoint");
+  }
 
   if (!roleIs("admin")) {
-    return unauthorized();
+    return unauthorized("You don't have permission to access this endpoint");
   }
 
   try {
@@ -79,6 +83,17 @@ export async function POST(request: NextRequest) {
     const image = formData.get("image") as File;
     const owner_id = sessionClaims?.sub as string;
 
+    // Handle branch_id notfound
+    const existBranch = await prisma.branch.findUnique({
+      where: {
+        id: parseInt(branch_id),
+      },
+    });
+
+    if (!existBranch) {
+      return badRequest("createMotor", { branch_id: ["Branch not found"] });
+    }
+
     const validatedFields = motorSchema.safeParse({
       name,
       description,
@@ -92,10 +107,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (!validatedFields.success) {
-      return badRequest('createMotor', validatedFields.error.flatten().fieldErrors);
+      return badRequest(
+        "createMotor",
+        validatedFields.error.flatten().fieldErrors
+      );
     }
-    
-    // TODO handle invalid branch
 
     // TODO handle image upload
 
@@ -108,23 +124,15 @@ export async function POST(request: NextRequest) {
         transmission,
         category,
         branch_id: parseInt(branch_id),
-        owner_id
+        owner_id,
       },
     });
 
     return NextResponse.json({
       message: "Create a motor success",
-      data
+      data,
     });
   } catch (error) {
-    console.log(error);
-
-    return NextResponse.json(
-      {
-        message: "Create a motor error",
-        reason: (error as Error).message,
-      },
-      { status: 500 }
-    );
+    return errRequest("createMotor", error as Error);
   }
 }
