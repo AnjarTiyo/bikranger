@@ -43,7 +43,7 @@ export default async function Home() {
                 <MotorCard
                   key={motor.id}
                   motorId={motor.id}
-                  imageUrl={motor.image || "/pcx.png"}
+                  imageUrl={motor.image}
                   motorName={motor.name}
                   motorType={motor.type}
                   transmission={motor.transmission}

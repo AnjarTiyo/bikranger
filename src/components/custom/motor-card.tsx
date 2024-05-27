@@ -23,7 +23,7 @@ export default async function MotorCard({ motorId, imageUrl, motorName, motorTyp
                             alt={`Motorbike ${motorName}`}
                             className="object-contain p-6 hover:scale-105"
                             height={300}
-                            src={!imageUrl ? "/pcx.png" : imageUrl}
+                            src={!imageUrl ? "/placeholder-motor.jpeg" : imageUrl}
                             style={{
                                 aspectRatio: "300/300",
                                 objectFit: "cover",
