@@ -1,4 +1,4 @@
-import MotorCard from '@/components/custom/motor_card'
+import MotorCard from '@/components/custom/motor-card'
 import SearchMotor from '@/components/custom/search_motor'
 import { Button } from '@/components/ui/button'
 import { FilterIcon } from 'lucide-react'

@@ -16,7 +16,6 @@ type Props = {
 export default async function MotorCard({ motorId, imageUrl, motorName, motorType, transmission, price }: Props) {
     return (
         <Card className="border rounded-lg overflow-hidden">
-
             <div className="p-1/2">
                 <CardHeader>
                     <div className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-md">
@@ -24,7 +23,7 @@ export default async function MotorCard({ motorId, imageUrl, motorName, motorTyp
                             alt={`Motorbike ${motorName}`}
                             className="object-contain p-6 hover:scale-105"
                             height={300}
-                            src={!imageUrl ? "/pcx.png" : imageUrl}
+                            src={!imageUrl ? "/placeholder-motor.jpeg" : imageUrl}
                             style={{
                                 aspectRatio: "300/300",
                                 objectFit: "cover",
