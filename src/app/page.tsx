@@ -1,10 +1,14 @@
+import MotorCard from "@/components/custom/motor-card";
 import SearchMotor from "@/components/custom/search_motor";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { getListMotor } from "@/utils/api/motor";
 import { ChevronRightIcon, MountainIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import React from "react";
 
 export default async function Home() {
+  const motorLists = await getListMotor();
+
   return (
     <>
       <section className="w-full py-12 md:py-24 lg:py-32">
@@ -19,7 +23,7 @@ export default async function Home() {
                   Rent the perfect motorbike for your next adventure. Browse our selection and book your ride today.
                 </p>
               </div>
-              <SearchMotor/>
+              <SearchMotor />
             </div>
             <Image
               alt="Motorbikes"
@@ -34,126 +38,23 @@ export default async function Home() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <div className="relative group overflow-hidden rounded-lg">
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View</span>
-              </Link>
-              <Image
-                alt="Motorbike 1"
-                className="object-cover w-full h-60"
-                height={300}
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "400/300",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
-              <div className="bg-white p-4 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">Honda Scoopy</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">$25 per day</p>
-              </div>
-            </div>
-            <div className="relative group overflow-hidden rounded-lg">
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View</span>
-              </Link>
-              <Image
-                alt="Motorbike 2"
-                className="object-cover w-full h-60"
-                height={300}
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "400/300",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
-              <div className="bg-white p-4 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">Yamaha NMAX 155</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">$30 per day</p>
-              </div>
-            </div>
-            <div className="relative group overflow-hidden rounded-lg">
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View</span>
-              </Link>
-              <Image
-                alt="Motorbike 3"
-                className="object-cover w-full h-60"
-                height={300}
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "400/300",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
-              <div className="bg-white p-4 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">Suzuki Address 110</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">$20 per day</p>
-              </div>
-            </div>
-            <div className="relative group overflow-hidden rounded-lg">
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View</span>
-              </Link>
-              <Image
-                alt="Motorbike 4"
-                className="object-cover w-full h-60"
-                height={300}
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "400/300",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
-              <div className="bg-white p-4 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">Honda PCX 125</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">$35 per day</p>
-              </div>
-            </div>
-            <div className="relative group overflow-hidden rounded-lg">
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View</span>
-              </Link>
-              <Image
-                alt="Motorbike 5"
-                className="object-cover w-full h-60"
-                height={300}
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "400/300",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
-              <div className="bg-white p-4 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">Yamaha XMAX 300</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">$40 per day</p>
-              </div>
-            </div>
-            <div className="relative group overflow-hidden rounded-lg">
-              <Link className="absolute inset-0 z-10" href="#">
-                <span className="sr-only">View</span>
-              </Link>
-              <Image
-                alt="Motorbike 6"
-                className="object-cover w-full h-60"
-                height={300}
-                src="/placeholder.svg"
-                style={{
-                  aspectRatio: "400/300",
-                  objectFit: "cover",
-                }}
-                width={400}
-              />
-              <div className="bg-white p-4 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">Suzuki Burgman 200</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">$45 per day</p>
-              </div>
-            </div>
+            {motorLists.data && motorLists.data.length > 0 ? (
+              motorLists.data.map((motor: any) => (
+                <MotorCard
+                  key={motor.id}
+                  motorId={motor.id}
+                  imageUrl={motor.image || "/pcx.png"}
+                  motorName={motor.name}
+                  motorType={motor.type}
+                  transmission={motor.transmission}
+                  price={motor.price}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No motors available.
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -173,8 +74,7 @@ export default async function Home() {
                   <ChevronRightIcon className="h-5 w-5 transition-all" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 text-gray-500 dark:text-gray-400">
-                  To rent a motorbike, you will need a valid driver license, a credit or debit card for the deposit, and
-                  a valid ID. You will also need to be at least 18 years old.
+                  To rent a motorbike, you will need a valid driver license, a credit or debit card for the deposit, and a valid ID. You will also need to be at least 18 years old.
                 </CollapsibleContent>
               </Collapsible>
               <Collapsible>
@@ -183,9 +83,7 @@ export default async function Home() {
                   <ChevronRightIcon className="h-5 w-5 transition-all" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 text-gray-500 dark:text-gray-400">
-                  You can book a motorbike online through our website. Simply choose your desired location, dates, and
-                  bike type, and we willll show you available options. You can then complete the booking and payment process
-                  online.
+                  You can book a motorbike online through our website. Simply choose your desired location, dates, and bike type, and we will show you available options. You can then complete the booking and payment process online.
                 </CollapsibleContent>
               </Collapsible>
               <Collapsible>
@@ -194,8 +92,7 @@ export default async function Home() {
                   <ChevronRightIcon className="h-5 w-5 transition-all" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 text-gray-500 dark:text-gray-400">
-                  The rental price includes the motorbike, a helmet, and basic insurance coverage. You will also get a map
-                  of the local area and recommendations for the best routes and attractions.
+                  The rental price includes the motorbike, a helmet, and basic insurance coverage. You will also get a map of the local area and recommendations for the best routes and attractions.
                 </CollapsibleContent>
               </Collapsible>
               <Collapsible>
@@ -204,8 +101,7 @@ export default async function Home() {
                   <ChevronRightIcon className="h-5 w-5 transition-all" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 text-gray-500 dark:text-gray-400">
-                  Yes, you can return the motorbike early if needed. However, we dont offer any refunds for unused
-                  rental days. Please let us know as soon as possible if you need to return the bike early.
+                  Yes, you can return the motorbike early if needed. However, we don’t offer any refunds for unused rental days. Please let us know as soon as possible if you need to return the bike early.
                 </CollapsibleContent>
               </Collapsible>
             </div>
