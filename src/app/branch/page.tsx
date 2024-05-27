@@ -6,14 +6,11 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-type Props = {}
-
-export default function DashboardPage({ }: Props) {
+export default async function DashboardPage() {
   const { sessionClaims } = auth();
 
   // If the user does not have the admin role, redirect them to the home page
-  if (sessionClaims?.metadata.role !== "admin") {
-    console.log("role", sessionClaims)
+  if (sessionClaims?.metadata.role !== "admin" || "branch") {
     redirect("/");
   }
 

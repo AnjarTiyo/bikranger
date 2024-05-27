@@ -53,6 +53,7 @@ export const motorSchema = z.object({
         !file || file.type === "" || ACCEPTED_IMAGE_TYPES.includes(file.type),
       "Only .jpg, .jpeg, .png, and .webp formats are supported"
     ),
+  owner_id: z.string(),
 });
 
 export type MotorSchema = z.infer<typeof motorSchema>;

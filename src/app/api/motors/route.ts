@@ -51,6 +51,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const {sessionClaims} = await auth();
+
   if (!roleIs("admin")) {
     return unauthorized();
   }
@@ -75,6 +77,7 @@ export async function POST(request: NextRequest) {
       | "electric";
     const branch_id = formData.get("branch_id") as string;
     const image = formData.get("image") as File;
+    const owner_id = sessionClaims?.sub as string;
 
     const validatedFields = motorSchema.safeParse({
       name,
@@ -85,6 +88,7 @@ export async function POST(request: NextRequest) {
       category,
       branch_id: parseInt(branch_id),
       image: image ?? undefined,
+      owner_id,
     });
 
     if (!validatedFields.success) {
@@ -104,6 +108,7 @@ export async function POST(request: NextRequest) {
         transmission,
         category,
         branch_id: parseInt(branch_id),
+        owner_id
       },
     });
 

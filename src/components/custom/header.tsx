@@ -3,8 +3,14 @@ import Link from 'next/link'
 import { MountainIcon, ShoppingCartIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { roleIs } from '@/utils/helpers/roles'
 
-export default function Header() {
+export default async function Header() {
+    let isAdmin = await roleIs("admin");
+    let isBranch = await roleIs("branch");
+    isAdmin = !!isAdmin
+    isBranch = !!isBranch
+
     return (
         <>
             <header className="flex justify-between h-20 w-full shrink-0 items-center px-4 md:px-6">
@@ -37,9 +43,13 @@ export default function Header() {
                     </SignedOut>
                     <SignedIn>
                         <div className='flex gap-4'>
-                            <Link href={'/admin/dashboard'}>
-                                <Button className='hover:bg-white hover:text-black hover:shadow-md'>Go to Admin Dashboard</Button>
-                            </Link>
+                            {
+                                isAdmin || isBranch &&
+                                <Link href={'/branch'}>
+                                    <Button className='hover:bg-white hover:text-black hover:shadow-md'>Go to Admin Dashboard</Button>
+                                </Link>
+                            }
+
                             <UserButton />
                         </div>
                     </SignedIn>
