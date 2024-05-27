@@ -3,28 +3,27 @@ import React from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import Link from 'next/link'
+import { getDetailMotor } from '@/utils/api/motor'
+import ButtonOrder from './button-order'
 
 type Props = {
     motorId: string
-    imageUrl: string
-    motorName: string
-    motorType: string
-    transmission: string
-    price: number
     isInOrder: boolean
 }
 
-export default async function MotorCard({ motorId, imageUrl, motorName, motorType, transmission, price, isInOrder = false }: Props) {
+export default async function MotorCard({ motorId, isInOrder = false }: Props) {
+    const motor = await getDetailMotor(motorId);
+
     return (
         <Card className="border rounded-lg overflow-hidden">
             <div className="p-1/2">
                 <CardHeader>
                     <div className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-md">
                         <Image
-                            alt={`Motorbike ${motorName}`}
+                            alt={`Motorbike ${motor.data.name}`}
                             className="object-contain p-6 hover:scale-105"
                             height={300}
-                            src={!imageUrl ? "/placeholder-motor.jpeg" : imageUrl}
+                            src={!motor.data.image ? "/placeholder-motor.jpeg" : motor.data.image}
                             style={{
                                 aspectRatio: "300/300",
                                 objectFit: "cover",
@@ -33,20 +32,20 @@ export default async function MotorCard({ motorId, imageUrl, motorName, motorTyp
                         />
                     </div>
                     <div className='space-y-2'>
-                        <CardTitle className='mt-4'>{motorName}</CardTitle>
-                        <CardDescription>{motorType} | {transmission}</CardDescription>
+                        <CardTitle className='mt-4'>{motor.data.name}</CardTitle>
+                        <CardDescription>{motor.data.category} | {motor.data.transmission}</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-xl font-bold">IDR {price / 1000}K/day</p>
+                    <p className="text-xl font-bold">IDR {motor.data.price / 1000}K/day</p>
                 </CardContent>
                 <CardFooter className='flex justify-between'>
-                    <Link href={`/motors/${motorId}`}>
+                    <Link href={`/motors/${motor.data.id}`}>
                         <Button>View Details</Button>
                     </Link>
                     {
                         !isInOrder &&
-                        <Button variant="outline">Order Now</Button>
+                        <ButtonOrder motorId={motor.data.id}/>
                     }
                 </CardFooter>
             </div>

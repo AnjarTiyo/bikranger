@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowLeftIcon, Calendar, Cog, Factory } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -11,7 +12,6 @@ export default function MotorDetailPage() {
   const [motorDetail, setMotorDetail] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  console.log("motor_id", motor_id)
 
   useEffect(() => {
     const fetchMotorDetail = async () => {
@@ -69,7 +69,7 @@ export default function MotorDetailPage() {
                 <p className="mt-3 flex text-gray-500 gap-2 dark:text-gray-400"><Calendar /> {year}</p> */}
                 <p className="mt-3 flex text-gray-500 gap-2 dark:text-gray-400"><Cog /> {transmission}</p>
               </div>
-              
+
               <div className="prose ">
                 <p>{description}</p>
               </div>
@@ -82,7 +82,9 @@ export default function MotorDetailPage() {
                     <ArrowLeftIcon className="w-4 h-4 mr-2" />
                     Back
                   </Button>
-                  <Button onClick={() => router.push(`/motors/${motor_id}/orders`)}>Order Now</Button>
+                  <Link href={`/motors/${motor_id}/orders`}>
+                    <Button>Order Now</Button>
+                  </Link>
                 </div>
               </div>
             </div>
