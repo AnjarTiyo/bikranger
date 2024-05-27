@@ -24,8 +24,8 @@ export const motorSchema = z.object({
     .min(3, {
       message: "Description must be at least 3 characters",
     })
-    .max(50, {
-      message: "Description must be less than 50 characters",
+    .max(250, {
+      message: "Description must be less than 250 characters",
     })
     .optional(),
   price: z
