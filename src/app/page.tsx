@@ -4,8 +4,7 @@ import { ChevronRightIcon, MountainIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
-
+export default async function Home() {
   return (
     <>
       <section className="w-full py-12 md:py-24 lg:py-32">
